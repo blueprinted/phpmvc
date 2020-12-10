@@ -357,13 +357,14 @@ function format_msec($msec)
 /**
  *  功能 目录文件列表(含子目录)
  *  @param $dir String 要list的目录
- *  @param $allpath Boolead 是否返回绝对路径 缺省true [tue:是,false:否(返回相对路径,相对于$dir)]
- *  @param $list Array 引用传值 存放结果列表
+ *  @param $allpath Boolean 是否返回绝对路径 缺省true [tue:是,false:否(返回相对路径,相对于$dir)]
+ *  @param $scanMode Integer 0:目录与文件均返回 1:仅返回文件 2仅返回目录
+ *  @param $pathkey Boolean 是否将路径作为返回数组的key true:是, false:否
  *  @param $ext String 只读取扩展名为$ext的文件 缺省空字符串(读取所有文件)
  *  @param $pdir String 父级目录 缺省空字符串 该参数无需传值
  *  @return Array array() / array(0=>xxx.php,0=>xxx/xxx.txt,...)
  */
-function dir_file_list($dir, $allpath = true, $ext = '', $pdir = '')
+function dir_file_list($dir, $allpath = true, $scanMode = 0, $pathkey = false, $ext = '', $pdir = '')
 {
     static $list = array();
     if ($pdir === '') {//用到了静态变量存储目录文件列表,如果不加这一段,外部显式先后多次调用该函数时,后一次调用返回的结果总会包含前一次调用的结果。
@@ -378,17 +379,32 @@ function dir_file_list($dir, $allpath = true, $ext = '', $pdir = '')
         if (!$allpath && $pdir === '') {
             $rootpath = $dir;
         }
+        if (($scanMode == 0 || $scanMode == 2) && $pdir !== '') {
+            $fpath = ($allpath ? $pdir:str_replace(($rootpath.DIRECTORY_SEPARATOR), '', $pdir)).str_replace($pdir, '', $dir);
+            if ($pathkey) {
+                $list[$fpath] = $fpath;
+            } else {
+                $list[] = $fpath;
+            }
+        }
         if (false !== ($handle = @opendir($dir))) {
             while (false !== ($file = readdir($handle))) {
                 if (substr($file, 0, 1) != '.') {
-                    dir_file_list($dir.DIRECTORY_SEPARATOR.$file, $allpath, $ext, $dir);
+                    dir_file_list($dir.DIRECTORY_SEPARATOR.$file, $allpath, $scanMode, $pathkey, $ext, $dir);
                 }
             }
             @closedir($handle);
         }
     } else {
-        if ($ext === '' || $ext === '*' || ($ext !== '' && fileext($dir) == $ext)) {
-            $list[] = ($allpath ? $pdir:str_replace(($rootpath.DIRECTORY_SEPARATOR), '', $pdir)).str_replace($pdir, '', $dir);
+        if ($scanMode == 0 || $scanMode == 1) {
+            if ($ext === '' || $ext === '*' || ($ext !== '' && fileext($dir) == $ext)) {
+                $fpath = ($allpath ? $pdir:str_replace(($rootpath.DIRECTORY_SEPARATOR), '', $pdir)).str_replace($pdir, '', $dir);
+                if ($pathkey) {
+                    $list[$fpath] = $fpath;
+                } else {
+                    $list[] = $fpath;
+                }
+            }
         }
     }
     return $list;

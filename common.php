@@ -104,7 +104,7 @@ user::autoLogin();
 /**
  * 记录日志
  */
-function appendlog($logMsg, $channel = 'common', $logLevel = 'warning', $context = array(), $extra = null)
+function appendlog($logMsg, $logLevel = 'warning', $channel = 'common', $context = array(), $extra = null)
 {
     return monolog_appendlog((isset($_SERVER['REQUEST_URI']) ? "URI={$_SERVER['REQUEST_URI']}" : 'URI=_null_') . ' ' . $logMsg, $logLevel, $channel, $context, $extra);
 }

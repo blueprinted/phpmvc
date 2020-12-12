@@ -53,23 +53,26 @@ function monolog_appendlog($logMsg, $logLevel, $channel, $context = array(), $ex
     // 现在就可以用日志服务了
     if (mkdir_recursive($logDir, 0775)) {
         if ($logLevel == 'debug') {
-            $logger->debug($logMsg);
+            $result = $logger->debug($logMsg);
         } elseif ($logLevel == 'info') {
-            $logger->info($logMsg);
+            $result = $logger->info($logMsg);
         } elseif ($logLevel == 'notice') {
-            $logger->notice($logMsg);
+            $result = $logger->notice($logMsg);
         } elseif ($logLevel == 'warning') {
-            $logger->warning($logMsg);
+            $result = $logger->warning($logMsg);
         } elseif ($logLevel == 'error') {
-            $logger->error($logMsg);
+            $result = $logger->error($logMsg);
         } elseif ($logLevel == 'critical') {
-            $logger->critical($logMsg);
+            $result = $logger->critical($logMsg);
         } elseif ($logLevel == 'alert') {
-            $logger->alert($logMsg);
+            $result = $logger->alert($logMsg);
         } elseif ($logLevel == 'emergency') {
-            $logger->emergency($logMsg);
+            $result = $logger->emergency($logMsg);
         } else {
-            $logger->debug($logMsg);
+            $result = $logger->debug($logMsg);
         }
+        return $result;
     }
+
+    return false;
 }

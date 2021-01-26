@@ -247,7 +247,7 @@ class curlUtil
      *      )
      * @return Array
      */
-    private static function setOptions($options = array())
+    public static function setOptions($options = array())
     {
         if (empty(self::$options)) {
             self::$options = self::$defaultOpts;
@@ -623,7 +623,7 @@ class curlUtil
      *         ...
      *     )
      */
-    public function multi($configs) {
+    public static function multi($configs) {
 
         $resu = $chArr = $opts = array();
 
